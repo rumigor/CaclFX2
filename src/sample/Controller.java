@@ -6,11 +6,9 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-
-import java.io.CharArrayReader;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+
 
 public class Controller {
     @FXML
@@ -51,6 +49,8 @@ public class Controller {
     public Button btnClear;
     @FXML
     public TextField textField;
+    @FXML
+    public Button btnChangeSign;
     ArrayList <Double> numbers = new ArrayList<>();
     ArrayList<String> opers = new ArrayList<>();
     double result;
@@ -58,52 +58,44 @@ public class Controller {
 
     public void getSQRT(ActionEvent actionEvent) {
         getResult();
-        textField.clear();
-        result = Math.sqrt(result);
-        textField.setText(Double.toString(result));
+        if (result >= 0) {
+            result = Math.sqrt(result);
+            textField.setText(Double.toString(result));
+        } else textField.setText("Корень из отр. числа не существует!");
+
     }
 
     public void getResult() {
+
         String[] operands = textField.getText().split("[-+X//]");
+        System.out.println(Arrays.toString(operands));
+        if (textField.getText().charAt(0)=='-') operands[1] = "-" + operands[1];
         for (String s : operands) {
             try {
             numbers.add(Double.parseDouble(s));
             } catch (NumberFormatException e) {
-                textField.clear();
-                textField.setText("Неправильный формат выражения!");
+                System.out.println("перед первой цифрой стоит оператор");;
             }
         }
-        if (textField.getText().charAt(0) == '-') {
-            String[] operators = textField.getText().split("\\d+");
-            if (operators.length == 0) result = numbers.get(0);
-            else {
-                opers.addAll(Arrays.asList(operators));
-                opers.remove(0);
-                opers.removeIf(x -> x.equals("."));
-            }
-        }
+        System.out.println(numbers);
+
         String[] operators = textField.getText().split("\\d+");
+        System.out.println(Arrays.toString(operators));
         if (operators.length == 0) result = numbers.get(0);
         else {
             opers.addAll(Arrays.asList(operators));
             opers.remove(0);
             opers.removeIf(x -> x.equals("."));
-            if (textField.getText().charAt(0) == '-') {
-                numbers.set(0, numbers.get(0)*(-1));
-                opers.remove(0);
             }
-//            for (int i = 0; i < opers.size()-1; i++) {
-//                if (opers.g)
-//            }
+        System.out.println(opers);
+
             result = numbers.get(0);
             for (int i = 0; i < opers.size(); i++) {
                 result = equation(opers.get(i), result, i);
             }
             opers.clear();
             numbers.clear();
-            textField.clear();
             textField.setText(Double.toString(result));
-        }
     }
 
     public double equation(String sign, double result, int index) {
@@ -149,5 +141,23 @@ public class Controller {
     public void addText(ActionEvent actionEvent) {
         Button btn = (Button) actionEvent.getSource();
         textField.appendText(btn.getText());
+    }
+
+    public void changeSign(ActionEvent actionEvent) {
+        getResult();
+        result = result*(-1);
+        textField.setText(Double.toString(result));
+    }
+
+    public void copyText(ActionEvent actionEvent) {
+        textField.copy();
+    }
+
+    public void cutText(ActionEvent actionEvent) {
+        textField.cut();
+    }
+
+    public void pasteText(ActionEvent actionEvent) {
+        textField.paste();
     }
 }
